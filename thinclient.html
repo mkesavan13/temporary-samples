@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ThinClient Mock with KS iFrame</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <link rel="stylesheet" href="../assets/style.css"/>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body class="ks_app">
+    <header class="tsd-page-toolbar">
+      <div class="tsd-toolbar-contents container">
+        <div class="table-cell ready" id="tsd-search" data-base=".">
+          <div class="field">
+            <label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path>
+              </svg>
+            </label>
+            <input type="text" id="tsd-search-field" aria-label="Search">
+          </div>
+          <div class="field">
+            <div id="tsd-toolbar-links"></div>
+          </div>
+          <ul class="results">
+            <li class="state loading">Preparing search index...</li>
+            <li class="state failure">The search index is not available</li>
+          </ul>
+          <a href="/index.html" class="title">Webex Embedded Apps SDK (@webex/embedded-app-sdk)</a>
+        </div>
+      </div>
+    </header>
+    <div class="thinclient_app">
+        <h2>ThinClient Mock with KS iFrame</h2>
+        <h3>Send Events to SDK:</h3>
+        <button id="send-all-events" onclick="sendEventsToSDK()">Send All Events</button>
+        <button id="theme-changed" onclick="sendEventsToSDKTheme()">Send application:themeChanged</button>
+        <button id="share-state-changed" onclick="sendEventsToSDKApplicationShareStateChanged()">Send application:shareStateChanged</button>
+        <button id="display-context-changed" onclick="sendEventsToSDKApplicationDisplayContextChanged()">Send application:displayContextChanged</button>
+        <button id="view-state-changed" onclick="sendEventsToSDKApplicationViewStateChanged()">Send application:viewStateChanged</button>
+        <button id="meeting-info-changed" onclick="sendEventsToSDKMeetingInfoChanged()">Send meeting:infoChanged</button>
+        <button id="meeting-role-changed" onclick="sendEventsToSDKMeetingRoleChanged()">Send meeting:roleChanged</button>
+        <button id="call-state-changed" onclick="sendEventsToSDKSidebarCallStateChanged()">Send sidebar:callStateChanged</button>
+        <button id="meeting-url-changed" onclick="sendEventsMeetingUrl()">Send meeting.url Events</button>
+        <button id="selected-audio-devices-changed" onclick="sendSelectedAudioDevicesChanged()">Send application:selectedAudioDevicesChanged</button>
+        <br/>
+        <form onsubmit="return loadCustomWebapp(this)">
+          <input name='custom-url' type="text" placeholder="Enter app URL"><input type="submit" value="Load custom Webapp">
+        </form>
+        <button id="update-embedded-sdk-version" style="visibility: hidden; position: fixed;" onclick="updateEmbeddedSdkVersion()"></button>
+        <br/><br/>
+        <iframe id="apps_demo" src="./index.html" data-cy="the-frame"></iframe>
+      </div>
+    </div>
+    <script>
+      var iframe = document.getElementById("apps_demo");
+      let embedded_sdk_version;
+
+      function updateEmbeddedSdkVersion(){
+        embedded_sdk_version = 1;
+      }
+
+      function loadCustomWebapp(form){
+        const customUrl = form.children['custom-url'].value;
+        iframe.setAttribute('src',customUrl);
+        return false;
+      }
+
+      var childWindow = iframe.contentWindow;
+
+      //
+      // Message sender and receiver
+      //
+      var iframeSendMessage = function (msg) {
+        console.log('THIN send msg=', msg);
+        iframe.contentWindow.postMessage(JSON.stringify(msg), "*");
+      };
+
+      window.addEventListener("message", function (e) {
+        if (e.source !== childWindow) {
+          return; // received msg from iframe only
+        }
+
+        var receivedMsg = JSON.parse(e.data);
+        handler(receivedMsg);
+      });
+
+      // Send Events actively
+      function sendEventsToSDK() {
+        iframeSendMessage(makeEventApplicationDisplayContextChanged());
+        iframeSendMessage(makeEventApplicationThemeChanged());
+        iframeSendMessage(makeEventApplicationShareStateChanged());
+        iframeSendMessage(makeEventApplicationViewStateChanged());
+        iframeSendMessage(makeMeetingInfoChanged());
+        iframeSendMessage(makeMeetingRoleChanged());
+        iframeSendMessage(makeSpaceInfoChanged());
+        iframeSendMessage(makeSidebarCallStateChanged());
+        iframeSendMessage(makeSelectedAudioDevicesChanged());
+      }
+      function sendEventsToSDKMeetingInfoChanged() {
+        iframeSendMessage(makeMeetingInfoChanged());
+      }
+      function sendEventsToSDKMeetingRoleChanged() {
+        iframeSendMessage(makeMeetingRoleChanged());
+      }
+      function sendEventsToSDKSidebarCallStateChanged() {
+        iframeSendMessage(makeSidebarCallStateChanged());
+      }
+      function sendEventsToSDKApplicationShareStateChanged() {
+        iframeSendMessage(makeEventApplicationShareStateChanged());
+      }
+      function sendEventsToSDKApplicationDisplayContextChanged() {
+        iframeSendMessage(makeEventApplicationDisplayContextChanged());
+      }
+      function sendEventsToSDKApplicationViewStateChanged() {
+        iframeSendMessage(makeEventApplicationViewStateChanged());
+      }
+
+      function sendEventsToSDKTheme() {
+        iframeSendMessage(makeEventApplicationThemeChanged());
+      }
+
+      function sendEventsMeetingUrl() {
+        iframeSendMessage(makeEventApplicationMeetingUrlChanged());
+      }
+      function sendEventsToSDKSpaceInfoChanged() {
+        iframeSendMessage(makeSpaceInfoChanged());
+      }
+
+      function sendSelectedAudioDevicesChanged() {
+        iframeSendMessage(makeSelectedAudioDevicesChanged());
+      }
+
+      //
+      // mockup handlers and responses
+      //
+      var handler = function (msg) {
+        console.log("THIN received", msg);
+        var res = null;
+        switch (msg.request) {
+          case "application.initialize":
+            // intentionally delay for testing
+            setTimeout(function () {
+              res = handleApplicationInitialize(msg);
+              iframeSendMessage(res);
+            }, 800);
+            break;
+          case "application.context.getMeeting":
+            res = handleGetMeeting(msg);
+            break;
+          case "application.context.getSpace":
+            res = handleGetSpace(msg);
+            break;
+          case "application.context.getUser":
+            // intentionally delay for testing
+            setTimeout(function () {
+              res = handleGetUser(msg);
+              iframeSendMessage(res);
+            }, 2000);
+            return;
+            break;
+          case "application.context.getSidebar":
+            res = handleGetSidebar(msg);
+            break;
+          case "application.sidebar.getCalls":
+            res = handleGetCalls(msg);
+            break;
+          case "application.sidebar.showBadge":
+            res = handleShowBadge(msg);
+            break;
+          case "application.sidebar.clearBadge":
+            res = handleClearBadge(msg);
+            break;
+          case "application.initiateSystemBrowserOAuth":
+            res = handleInitiateSystemBrowserOAuth(msg);
+            break;
+          case "application.performance":
+            res = handlePerformance(msg);
+            break;
+
+          case "application.setShareUrl":
+            res = handleSetShareUrl(msg);
+            break;
+          case "application.clearShareUrl":
+            res = handleClearShareUrl(msg);
+            break;
+          case "application.openUrlInSystemBrowser":
+            res = handleOpenUrlInSystemBrowser(msg);
+            break;
+          case "application.listen":
+            res = handleListen(msg);
+            break;
+          case "application.meeting.setPresentationUrl":
+            res = handleSetPresentationUrl(msg);
+            break;
+          case "application.meeting.clearPresentationUrl":
+            res = handleClearPresentationUrl(msg);
+            break;
+          case "application.getSelectedAudioDevices":
+            res = handleGetSelectedAudioDevices(msg);
+            break;
+          default:
+            break;
+        }
+
+        if (res) {
+          iframeSendMessage(res);
+        }
+      };
+
+      var handlePerformance = function (msg) {
+        console.log('THIN', 'handlePerformance msg=', msg);
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+        };
+      };
+
+      var handleInitiateSystemBrowserOAuth = function (msg) {
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: { authorizationCode: "this is authorizationCode" },
+        };
+      };
+
+      var handleOpenUrlInSystemBrowser = function (msg) {
+        function onClickOpenPopupWindow() {
+          var url = msg.parameter.url;
+          window.open(url, 'New Window', 'width=800,height=600,resizable=yes,location=no,toolbar=no,menubar=no,status=no');
+        }
+
+        onClickOpenPopupWindow();
+
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: {},
+        };
+      };
+
+      var handleClearShareUrl = function (msg) {
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: {},
+        };
+      };
+
+      var handleSetShareUrl = function (msg) {
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: {},
+        };
+      };
+
+      var handleGetUser = function (msg) {
+        if(embedded_sdk_version && embedded_sdk_version > 1){
+          return {
+            code: 6, // 0: success, 1: generic error
+            requestId: msg.requestId,
+          };
+        }
+        var data = {
+          displayName: "zhenyu1234 zhenyu1234",
+          email: "zhenyu1234@mailinator.com",
+          id: "86844ce7-28df-411e-a611-8c40447e65a6",
+          orgId: "6e863103-7cdb-442d-ad2e-0af0a25b9247",
+          token:
+            "eyJhbGciOiJSUzI1NiJ9.eyJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImlzcyI6Imh0dHBzOlwvXC9pZGJyb2tlcmJ0cy53ZWJleC5jb21cL2lkYiIsImNvbS5jaXNjby51c2VyLnV1aWQiOiIzOWIyYmQxNy1mZTUyLTVhOTEtOGM4ZC1lMmIwZDE3MzVhYTgiLCJjb20uY2lzY28uY29udGV4dC51dWlkLm1lZXRpbmdpZCI6ImU3ZmQzN2Y0LWJhODctNTdmNC1hODBlLTg5YTRhZTdjNGRjZCIsImNvbS5jaXNjby5jb250ZXh0LnV1aWQuY29uZmVyZW5jZWlkIjoiZmQ5NGMxZmEtZjIzZC01MjA0LWIwNWEtOGE2ZGUxNmRhMDI3IiwiZ2l2ZW5fbmFtZSI6IiIsImF1ZCI6IlkybHpZMjl6Y0dGeWF6b3ZMM1Z6TDBGUVVFeEpRMEZVU1U5T0x6VXhPRGMxTUdRMExUTTNaRGN0TkdZMk1DMWhPV0UzTFdFd1pURTFOREZoTmpSa05nPT0iLCJjb20uY2lzY28udXNlci5vcmdpZCI6ImZiMjg5YzYzLTg5MGMtNTBlYy04NDg1LTMzZWRmNTI3YjkxYSIsIm5hbWUiOiIiLCJjb20uY2lzY28udXNlci5sZXZlbCI6WyJlbmhhbmNlZCIsImFkbWluIl0sImV4cCI6MTYyNjc0MzIwMywiaWF0IjoxNjI2NjU2ODAzLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiIiwiY29tLmNpc2NvLnVzZXIuaW5mbyI6IntcIm1lZXRpbmdfaWRcIjpcImIyZjdjMjI1NzIyNDQyYTQ5MGVlNzdlYmViN2Y5MDNjX0lfMjAwMDYyNDA3ODE0NDE1NzMzXCJ9In0.RUa2RaDUm9JyVksSv14yrvt2aHVanxcjZIWHOFxtFYnkVUjpX1DHnLCv3X3ck2oj1ZOum0ICbXYBioibYRkoOP3--QTt1U1UWKi0glMQ9Lr8wfnKgSVxoFhKwawZPQ0IgTv7EHhMY-ktfeT17jj-vdbLAq4Y5CO5RnlPHkclUBY-wOS1PUFY7ArtFFil8rFiOxLpwaWz6KrgbBEcH-cfd-NqeIfMHTbjYm1tf4yMZiwyMB3Ql19E2kf3yM19EXPfyK8f80SJmkxVJMEbGacqqGyr4ap34LNvjHbsMY6JuYTU-AfqCoOz028RKbwXWyxlW5Vjc6L89aGxqWWqFiJ0JQ",
+        };
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: data,
+        };
+      };
+
+      var handleGetMeeting = function (msg) {
+        var data = {
+          id: "000 0000 0000",
+          instanceId: "b32a60d7-e552-543d-8801-85e832a5ee5f",
+          title: "iframe meeting title",
+          startTime: "2021-04-29T14:00:00.000Z", // new Date('2021-04-29T14:00:00.000Z')
+          endTime: "2021-04-29T14:00:00.000Z", // Date.parse('2021-04-29T14:00:00.000Z');
+          userRoles: ["HOST", "PANELIST", "INTERPRETER"],
+          meetingType: "MEETING",
+          permissionToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6....',
+          url: 'https://locus-a.wbx2.com/locus/api/v1/loci/714D7129-9785-4C5C-87B7-0FC538F3ED30/',
+          // derivedId: '03BA48A1-80A3-4779-B32C-3107E92029B1'
+        };
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: data,
+        };
+      };
+
+      var handleSetPresentationUrl = function (msg) {
+        return {
+          code: 0,
+          requestId: msg.requestId,
+          data: {}
+        }
+      }
+
+      var handleClearPresentationUrl = function (msg) {
+        return {
+          code: 0,
+          requestId: msg.requestId,
+          data: {}
+        }
+      }
+
+      var handleGetSpace = function (msg) {
+        var data = {
+          id: "000 0000 0000",
+          title: "iframe space title",
+        };
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: data,
+        };
+      };
+
+      var handleGetSidebar = function (msg) {
+        var data = {
+          badgeType: "count",
+          count: 4
+        };
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: data,
+        };
+      };
+
+      var handleGetCalls = function (msg) {
+      var data = {
+        calls: [
+          {
+          id: '000 0000 0000',
+          state: "Started",
+          callType: "Received",
+          remoteParticipants: [{
+            name: "Eric",
+            callerID: "12345678",
+          }],
+          localParticipant: {
+            name: "Mark",
+            callerID: "87654321",
+            isMuted: false
+          }
+          }
+        ]
+      };
+
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: data,
+        };
+      };
+
+      const handleShowBadge = (msg) => {
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: true,
+        };
+      }
+
+      const handleClearBadge = (msg) => {
+        return {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId
+        };
+      }
+
+      // if its 2.0.0 or above, user object as part of application.initialize otherwise fetch the user properties.
+      var handleApplicationInitialize = function (msg, force) {
+        embedded_sdk_version = parseInt(msg.parameter.embeddedSdkVersion);
+        var data = {
+          application: {
+            about: "Webex App, Version:99.99.0",
+            capabilities: ['test'],
+            deviceType: "DESKTOP",
+            displayContext: "SPACE_TAB",
+            isPrivateDataAvailable: true,
+            isShared: false,
+            language: "en",
+            sdkVersion: "2.0.0",
+            theme: "LIGHT",
+            "user": {
+              "id": "FB4C3EF1-64CA-4AA9-9F02-E4D9A02DAF05",
+              "orgId": "B3F426D7-AED1-46C6-9B70-6091A9D88A11",
+              "email": "johnd@email.com",
+              "displayName": "neeraj",
+              "token": "X&49394732342dsfDFSDFS....",
+            },
+          },
+        };
+
+        if (force){
+          return {
+            code: 0, // 0: success, 1: generic error
+            request: 'application.initialize',
+            data: data,
+          };
+        }else{
+          return {
+            code: 0, // 0: success, 1: generic error
+            requestId: msg.requestId,
+            data: data,
+          };
+        }
+      };
+
+      var handleGetSelectedAudioDevices= function(msg) {
+        return  {
+          code: 0, // 0: success, 1: generic error
+          requestId: msg.requestId,
+          data: {
+            "input": {
+              "id": "a87d86fc49785df94df42a597640f2451f5e669930176b6cfcef2baa9590f7ec"
+            },
+            "output": {
+              "id": "f283a60c031775c4d27ea8588a102ed1c354907f14d45b0b5682fe5248ecdfc8"
+            }
+          },
+        };
+      }
+
+      var makeEventApplicationDisplayContextChanged = function (msg) {
+        var data = {
+          displayContext: "MEETING_STANDALONE_WINDOW",
+        };
+        return {
+          type: "event",
+          request: "application:displayContextChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+
+      var makeEventApplicationViewStateChanged = function () {
+        var data = {
+          viewState: "IN_FOCUS",
+        };
+        return {
+          type: "event",
+          request: "application:viewStateChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+
+      var useDarkTheme = true;
+      var makeEventApplicationThemeChanged = function (msg) {
+        var data = {
+          theme: useDarkTheme? "DARK" : "LIGHT",
+        };
+        useDarkTheme = !useDarkTheme;
+        return {
+          type: "event",
+          request: "application:themeChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+      var makeEventApplicationMeetingUrlChanged = function (msg) {
+        return {
+          type: "event",
+          request: "meeting:infoChanged",
+          requestId: null,
+          data: {
+            url: 'new url ' + Math.random(),
+          },
+        };
+      };
+
+      var makeEventApplicationShareStateChanged = function (msg) {
+        var data = {
+          isShared: true,
+        };
+        return {
+          type: "event",
+          request: "application:shareStateChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+
+      var makeMeetingInfoChanged = function (msg) {
+        var data = {
+          id: "F9FE9BDF-8011-4F93-B5CB-71AFFDD7085C",
+          title: "Daily Standup",
+          startTime: "2021-01-17T13:00:00.00Z",
+          endTime: "2021-01-17T13:00:10.00Z",
+          userRoles: ["HOST"],
+          meetingType: "MEETING",
+          permissionToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6....',
+          displayName: 'Kesavan',
+        };
+        return {
+          type: "event",
+          request: "meeting:infoChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+
+      var makeMeetingRoleChanged = function (msg) {
+        var data = {
+          userRoles: ["HOST", "PANELIST"],
+        };
+        return {
+          type: "event",
+          request: "meeting:roleChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+
+      var makeSpaceInfoChanged = function (msg) {
+        var data = {
+          id: "space 101",
+          derivedId: "111-111-1111-1111",
+          title: "space mockup title",
+        };
+        return {
+          type: "event",
+          request: "space:infoChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+
+      var makeSidebarCallStateChanged = function (msg) {
+      var data = {
+        calls: [
+          {
+          id: '000 0000 0000',
+          state: "Hold",
+          callType: "Received",
+          remoteParticipants: [{
+            name: "Eric",
+            callerID: "12345678",
+          }],
+          localParticipant: {
+            name: "Mark",
+            callerID: "87654321",
+            isMuted: false
+          }
+          }
+        ]
+      };
+
+        return {
+          type: "event",
+          request: "sidebar:callStateChanged",
+          requestId: null,
+          data: data,
+        };
+      };
+
+      var makeSelectedAudioDevicesChanged = function(msg) {
+        return {
+          type: "event",
+          request: "application:selectedAudioDevicesChanged",
+          requestId: null,
+          data: {type: 'input'},
+        }
+      };
+
+    </script>
+    <script src="./search.js" defer></script>
+    <script async src="../assets/search.js" id="search-script"></script>
+    <script src="../assets/main.js"></script>
+  </body>
+</html>

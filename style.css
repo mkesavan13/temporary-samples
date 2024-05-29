@@ -1,0 +1,329 @@
+/* Our default values set as CSS variables */
+:root {
+  --color-bg: #e4e5e6;
+  --color-text-main: #1C1C1C;
+  --color-primary: #000;
+  --color-input-background: #FFFFFF;
+  --color-input-border: #000000;
+  --color-button-background: #5acc42;
+  --color-button-text: #000;
+  --color-button-border: #07C1F5;
+  --color-button-hover: #68d348;
+  --color-button-pressed: #007AA3;
+  --font-family: "HK Grotesk";
+  --font-family-header: "HK Grotesk";
+  --color-event-log: red;
+}
+
+/* Basic page style resets */
+* {
+  box-sizing: border-box;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* Import fonts */
+@font-face {
+  font-family: HK Grotesk;
+  src: url("https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027")
+    format("opentype");
+}
+@font-face {
+  font-family: HK Grotesk;
+  font-weight: bold;
+  src: url("https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437")
+    format("opentype");
+}
+
+/******************************************************************************
+END default styles
+******************************************************************************/
+
+body.ks_app {
+  font-family: HK Grotesk;
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  padding:20px;
+}
+
+#apps_demo {
+  width: 100%;
+  height: 60vh;
+  border: 1px solid rgba(0,0,0,0.3);
+}
+
+/* Inputs */
+input,select {
+  font-family: inherit;
+  font-size: 100%;
+  background: var(--color-input-background);
+  border: 1px solid var(--color-input-border);
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  transition: 500ms;
+  box-shadow:0px 3px 5px rgba(0,0,0,0.3);
+  margin:10px;
+  margin-left:0px;
+}
+
+button, input[type='submit'] {
+  font-family: inherit;
+  font-size: 100%;
+  background: var(--color-button-background);
+  color: var(--color-button-text);
+  border: 0px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  box-shadow:0px 3px 5px rgba(0,0,0,0.3);
+  margin:10px;
+  margin-left:0px;
+  transition: 500ms;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--color-button-hover);
+}
+
+button:active {
+  background-color: var(--color-button-pressed);
+}
+
+input[disabled], select[disabled], button[disabled]{
+  cursor: not-allowed;
+  background: linear-gradient(to bottom, rgba(214, 206, 206, 0.65) 0%,rgba(214, 206, 206, 0.65) 100%);
+  box-shadow: none;
+  transition: 500ms;
+}
+
+input[disabled]:hover::after, select[disabled]:hover::after, button[disabled]:hover::after{
+  border:1px solid black;
+  width: 10px;
+  height: 1px;
+}
+
+/* Title */
+h2 {
+  color: var(--color-primary);
+  padding-bottom: 4px;
+  margin-bottom: 0px;
+  margin-top:0px;
+}
+
+/* Subheading */
+h4 {
+  padding-bottom: 4px;
+  margin-bottom: 0px;
+  margin-top:35px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 20;
+  padding: 0;
+}
+
+li {
+  border-bottom: 1px solid var(--color-text-main);
+  padding:10px;
+  word-break: break-all;
+}
+
+.thinclient_app.trim-top{
+  padding-top: 20px !important;
+}
+
+.parent.trim-top{
+  margin-top: 20px !important;
+}
+
+.parent{
+  display: flex;
+  margin-top: 50px;
+}
+
+.parent div{
+  flex: 50%;
+}
+
+.parent div.app{
+  padding: 30px;
+  padding-top: 0px;
+}
+
+.thinclient_app{
+  padding:50px;
+}
+
+.parent div.app.right{
+  padding-top: 0px;
+}
+
+.left{
+  width: 50vw;
+}
+
+.left button{
+  display: inline;
+  margin-bottom:10px;
+}
+#console li .per-log{
+  position: relative;
+}
+#console li .per-log div{
+  display: inline;
+  position: absolute;
+  right: 0px;
+  visibility: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+#console li .per-log div img{
+  width: 20px;
+  height: auto;
+  margin-right: 5px;
+}
+
+#console li .per-log:hover div{
+  visibility: visible;
+}
+
+.event-log b{
+  color: var(--color-event-log);
+}
+
+.app.right, .app.left{
+  max-height: 80vh;
+  overflow: scroll;
+}
+
+#storage_choices_title{
+  cursor: pointer;
+  border:1px solid black;
+  border-radius: 3px;;
+  padding:10px;
+}
+
+#storage_choices{
+  height: unset;
+  overflow: scroll;
+}
+
+#storage_choices.closed{
+  height: 0px;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+::-webkit-scrollbar:horizontal{
+  height: 0px;
+}
+
+.app.right pre{
+  font-size: larger;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  background: none;
+  border: none;
+  border-left: 5px solid rgba(0,0,0,0.5);
+  border-radius: 0;
+  margin: 20px;
+  margin-left:20px;
+  padding:15px;
+}
+
+.app.right #eventLogTitle{
+  display: flex;
+  border-bottom: 1px solid var(--color-text-main);
+  padding-bottom: 15px;
+}
+
+.app.right #eventLogTitle #title{
+  font-weight: bold;
+  flex: 95%;
+}
+
+.app.right #eventLogTitle #button{
+  text-align: right;
+  cursor: pointer;
+}
+
+.app.right #eventLogTitle #title, .app.right #eventLogTitle #button{
+  display: inline;
+}
+
+
+/**TS Doc Header**/
+.tsd-page-toolbar .tsd-toolbar-contents{
+  margin: 0px !important;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+#tsd-search .field input{
+  box-shadow: none;
+}
+
+#tsd-search .results span.parent{
+  display: inline;
+}
+
+#tsd-search ul.results li{
+  border-bottom: none;
+  padding: 0px;
+}
+
+#tsd-search .results a {
+  padding: 0 10px;
+}
+
+.tsd-page-toolbar .tsd-toolbar-contents.container{
+  max-width:none;
+}
+
+*::-webkit-scrollbar-track{
+  background: none;
+}
+
+.theme div{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.theme div#currentTheme{
+  min-width: 100px;
+  height: 41px;
+  display: inline-block;
+  margin: 0.5rem 1rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.theme div#currentTheme.light{
+  background-color: #FFFFFF;
+  border:1px solid #000;
+}
+
+.theme div#currentTheme.dark{
+  background-color: black;
+  border:1px solid #fff;
+  color: white;
+}
