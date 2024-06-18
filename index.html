@@ -1,16 +1,53 @@
 <html>
     <head>
         <title>My Temporary Samples</title>
+        <style>
+            body{
+                margin: 0;
+                background-color: #dfdfdf;
+            }
+
+            div.header, div.footer{
+                padding: 5px 30px;
+                color: #5acc42;
+                background-color: black;
+                box-shadow: 0px 5px 10px rgba(0,0,0,0.3);
+            }
+
+            div.footer{
+                color: white;
+                position: fixed;
+                bottom: 0;
+                width: 100vw;
+                box-shadow: 0px -5px 10px rgba(0,0,0,0.3);
+            }
+
+            div.footer a{
+                color: rgb(0, 149, 255);
+            }
+
+            div.content{
+                padding: 30px;
+                font-size: 20px;
+                font-family: 'comic sans ms';
+            }
+        </style>
     </head>
     <body>
-        <h3>My Temporary Samples</h3>
-        Welcome to my temporary samples page. Right now I have the following samples hosted:
-        <ul>
-            <li><a href="eaf-ks-versioned/">eaf-ks-versioned</a> - Testing the Sample app with embeddedSdkVersion added</li>
-            <li><a href="browser-plugin-meetings/">browser-plugin-meetings</a> - Testing the sample app with moveTo device issue fix</li>
-        </ul>
-        Whenever the above list changes or something gets added, I'll just keep updating this page. <br/>
-        Thank you.<br/>
-        My bio here: https://intro.krishnainfotron.com/
+        <div class="header">
+            <h1>Samples</h1>
+        </div>
+        <div class="content">
+            Welcome to my temporary samples page. Right now I have the following samples hosted:
+            <ul>
+                <li><a href="eaf-ks-versioned/">eaf-ks-versioned</a> - Testing the Sample app with embeddedSdkVersion added</li>
+                <li><a href="browser-plugin-meetings/">browser-plugin-meetings</a> - Testing the sample app with moveTo device issue fix</li>
+            </ul>
+            Whenever the above list changes or something gets added, I'll just keep updating this page. <br/><br/>
+            Thank you.<br/><br/>
+        </div>
+        <div class="footer">
+            <h4>A little about myself: <a href="https://intro.krishnainfotron.com/">https://intro.krishnainfotron.com/</a></h4>
+        </div>
     </body>
 </html>
