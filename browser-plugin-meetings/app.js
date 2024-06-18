@@ -3835,10 +3835,10 @@ window.onload = () => {
   const meetingSdk = document.createElement('script');
   meetingSdk.type = 'text/javascript';
   if(params.get('meetings') !== null){
-    meetingSdk.src = '../meetings.min.js';
+    meetingSdk.src = './meetings.min.js';
   }
   else{
-    meetingSdk.src = '../webex.min.js';
+    meetingSdk.src = './webex.min.js';
   }
   document.body.appendChild(meetingSdk);
   addPlayIfPausedEvents(htmlMediaElements);
